@@ -5,13 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Commons\" />
-    <Folder Include="Contracts\" />
+    <ProjectReference Include="..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\Infraestructure\Infraestructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Domain\Domain.csproj" />
-    <ProjectReference Include="..\Infraestructure\Infraestructure.csproj" />
+    <Reference Include="SharpArch.Domain">
+      <HintPath>..\..\..\..\source\repos\WebApiTemplate\Packages\SharpArch.Domain.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

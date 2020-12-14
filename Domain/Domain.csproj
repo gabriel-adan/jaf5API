@@ -5,11 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Dtos\" />
-    <Folder Include="RepositoryInterfaces\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="SharpArch.Domain">
       <HintPath>..\Packages\SharpArch.Domain.dll</HintPath>
     </Reference>
