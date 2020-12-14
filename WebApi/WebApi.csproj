@@ -1,0 +1,87 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\Infraestructure\Infraestructure.csproj" />
+    <ProjectReference Include="..\Logic\Logic.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Antlr3.Runtime">
+      <HintPath>..\Packages\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Authentication.Token.Provider">
+      <HintPath>..\Packages\Authentication.Token.Provider.dll</HintPath>
+    </Reference>
+    <Reference Include="Common.Logging">
+      <HintPath>..\Packages\Common.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Common.Logging.Core">
+      <HintPath>..\Packages\Common.Logging.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="FluentNHibernate">
+      <HintPath>..\Packages\FluentNHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="Iesi.Collections">
+      <HintPath>..\Packages\Iesi.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="itext.barcodes">
+      <HintPath>..\Packages\itext.barcodes.dll</HintPath>
+    </Reference>
+    <Reference Include="itext.forms">
+      <HintPath>..\Packages\itext.forms.dll</HintPath>
+    </Reference>
+    <Reference Include="itext.io">
+      <HintPath>..\Packages\itext.io.dll</HintPath>
+    </Reference>
+    <Reference Include="itext.kernel">
+      <HintPath>..\Packages\itext.kernel.dll</HintPath>
+    </Reference>
+    <Reference Include="itext.layout">
+      <HintPath>..\Packages\itext.layout.dll</HintPath>
+    </Reference>
+    <Reference Include="itext.pdfa">
+      <HintPath>..\Packages\itext.pdfa.dll</HintPath>
+    </Reference>
+    <Reference Include="itext.sign">
+      <HintPath>..\Packages\itext.sign.dll</HintPath>
+    </Reference>
+    <Reference Include="itext.styledxmlparser">
+      <HintPath>..\Packages\itext.styledxmlparser.dll</HintPath>
+    </Reference>
+    <Reference Include="itext.svg">
+      <HintPath>..\Packages\itext.svg.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data">
+      <HintPath>..\Packages\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="NHibernate">
+      <HintPath>..\Packages\NHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="Remotion.Linq.EagerFetching">
+      <HintPath>..\Packages\Remotion.Linq.EagerFetching.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpArch.Domain">
+      <HintPath>..\Packages\SharpArch.Domain.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Configuration.ConfigurationManager">
+      <HintPath>..\Packages\System.Configuration.ConfigurationManager.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.ProtectedData">
+      <HintPath>..\Packages\System.Security.Cryptography.ProtectedData.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
