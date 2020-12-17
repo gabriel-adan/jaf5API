@@ -3,6 +3,7 @@
     public enum EState : byte
     {
         RESERVED = 1,
-        REQUESTED
+        REQUESTED = 2,
+        TIMEDOUT = 3
     }
 }
