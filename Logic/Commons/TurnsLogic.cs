@@ -180,7 +180,6 @@ namespace Logic.Commons
                 teamsRepository.TransactionManager.BeginTransaction();
 
                 Team team = new Team();
-                team.IsCompleted = false;
                 team.IsPrivate = isPrivate;
                 team.Name = name;
                 team.Perfil = perfil;

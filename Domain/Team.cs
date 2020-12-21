@@ -6,7 +6,6 @@ namespace Domain
     public class Team : Entity
     {
         public virtual string Name { get; set; }
-        public virtual bool IsCompleted { get; set; }
         public virtual bool IsPrivate { get; set; }
 
         public virtual Perfil Perfil { get; set; }

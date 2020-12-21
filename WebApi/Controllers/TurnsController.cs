@@ -16,12 +16,6 @@ namespace WebApi.Controllers
             this.turnsLogic = turnsLogic;
         }
 
-        //[HttpGet]
-        //public IActionResult Get()
-        //{
-        //    return Ok();
-        //}
-
         [HttpPost("Request")]
         [Authorize(Roles = "Player")]
         public IActionResult _Request([FromForm] RequestTurnForm requestTurnForm)
