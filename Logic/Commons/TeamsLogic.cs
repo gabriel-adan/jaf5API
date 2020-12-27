@@ -29,24 +29,18 @@ namespace Logic.Commons
             try
             {
                 Turn turn = turnsRepository.Get(turnId);
-                if (turn == null)
-                    throw new ArgumentException("Turno inválido.");
+                Helper.ThrowIfNull(turn, "Turno inválido.");
                 Team team = turn.Team;
-                if (team == null)
-                    throw new ArgumentException("No existe el grupo.");
-                if (team.Players.Count == (int)EPlayersOnTeam.MAX_NUMBER)
-                    throw new ArgumentException("El grupo ya está completo.");
+                Helper.ThrowIfNull(team, "No existe el grupo.");
+                Helper.ThrowIf(team.Players.Count == (int)EPlayersOnTeam.MAX_NUMBER, "El grupo ya está completo.");
                 
                 Perfil perfil = perfilsRepository.Get(perfilId);
-                if (perfil == null)
-                    throw new ArgumentException("Perfil inválido.");
+                Helper.ThrowIfNull(perfil, "Perfil inválido.");
                 Player player = team.Players.Where(p => p.Perfil == perfil).FirstOrDefault();
                 if (player != null)
                 {
-                    if (player.ConfirmDate.HasValue)
-                        throw new ArgumentException(string.Format("Ya estas unido al grupo {0}.", team.Name));
-                    else
-                        throw new ArgumentException(string.Format("Ya formas parte del grupo {0}.", team.Name));
+                    Helper.ThrowIf(player.ConfirmDate.HasValue, string.Format("Ya estas unido al grupo {0}.", team.Name));
+                    Helper.ThrowIf(!player.ConfirmDate.HasValue, string.Format("Ya formas parte del grupo {0}.", team.Name));
                 }
                 DateTime now = Helper.GetDateTimeZone();
                 player = new Player();
@@ -58,15 +52,10 @@ namespace Logic.Commons
                 DateTime date = turn.Date;
                 TimeSpan time = turn.Hour.Time;
                 DateTime turnDateTime = new DateTime(date.Year, date.Month, date.Day, time.Hours, time.Minutes, time.Seconds);
-                if (turnDateTime < now)
-                    throw new ArgumentException("El turno ya venció pero quedas unido al grupo para la próxima convocatoria!!!");
-                else
-                {
-                    var difDate = turnDateTime.AddHours((int)ETurnsExpiration.HOURS);
-                    if (difDate < now)
-                        throw new ArgumentException("Las solicitudes de unión solo pueden hacerse con 1 Hora de anticipación, pero quedas unido al grupo para la próxima convocatoria!!!");
-                }
-
+                Helper.ThrowIf(turnDateTime < now, "El turno ya venció pero quedas unido al grupo para la próxima convocatoria!!!");
+                var difDate = turnDateTime.AddHours((int)ETurnsExpiration.HOURS);
+                Helper.ThrowIf(difDate < now, "Las solicitudes de unión solo pueden hacerse con 1 Hora de anticipación, pero quedas unido al grupo para la próxima convocatoria!!!");
+                
                 Perfil owner = team.Perfil;
                 //Enviar notificación de solicitud de unión al propietario del grupo
 
@@ -84,15 +73,12 @@ namespace Logic.Commons
             {
                 TurnResultDto turnResultDto = null;
                 Turn turn = turnsRepository.Get(turnId);
-                if (turn == null)
-                    throw new ArgumentException("Turno inválido.");
+                Helper.ThrowIfNull(turn, "Turno inválido.");
                 Team team = turn.Team;
-                if (team == null)
-                    throw new ArgumentException("Grupo inválido.");
+                Helper.ThrowIfNull(team, "Grupo inválido.");
                 
                 Player player = team.Players.Where(p => p.Id == playerId).FirstOrDefault();
-                if (player == null)
-                    throw new ArgumentException("No existe la solicitud de unión.");
+                Helper.ThrowIfNull(player, "No existe la solicitud de unión.");
 
                 Perfil perfil = team.Perfil;
                 playersRepository.TransactionManager.BeginTransaction();
@@ -117,8 +103,7 @@ namespace Logic.Commons
                     else
                     {
                         var difDate = turnDateTime.AddHours((int)ETurnsExpiration.HOURS / 2);
-                        if (difDate < now)
-                            throw new ArgumentException("Las solicitudes de unión solo se pueden confirmar con media hora de anticipación al horario del turno.");
+                        Helper.ThrowIf(difDate < now, "Las solicitudes de unión solo se pueden confirmar con media hora de anticipación al horario del turno.");
                     }
 
                     if (count < (int)EPlayersOnTeam.MIN_NUMBER)

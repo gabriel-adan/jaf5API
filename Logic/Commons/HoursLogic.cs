@@ -24,10 +24,8 @@ namespace Logic.Commons
             try
             {
                 Camp camp = campRepository.Get(campId);
-                if (camp == null)
-                    throw new ArgumentException("Datos de cancha inválida.");
-                if (!camp.IsEnabled)
-                    throw new ArgumentException("Cancha no disponible por el momento.");
+                Helper.ThrowIfNull(camp, "Datos de cancha inválida.");
+                Helper.ThrowIf(!camp.IsEnabled, "Cancha no disponible por el momento.");
                 if (!hoursRepository.Exists(time, dayOfWeek, campId))
                 {
                     Hour hour = new Hour();
@@ -59,18 +57,10 @@ namespace Logic.Commons
             try
             {
                 Hour hour = hoursRepository.Get(hourId);
-                if (hour != null)
-                {
-                    if (hour.IsEnabled != isEnabled)
-                    {
-                        hour.IsEnabled = isEnabled;
-                        hoursRepository.SaveOrUpdate(hour);
-                    }
-                    else
-                        throw new ArgumentException("El horario ya se encuentra " + (isEnabled ? "habilitado" : "deshabilitado"));
-                }
-                else
-                    throw new ArgumentException("El horario no existe.");
+                Helper.ThrowIfNull(hour, "El horario no existe.");
+                Helper.ThrowIf(hour.IsEnabled == isEnabled, "El horario ya se encuentra " + (isEnabled ? "habilitado" : "deshabilitado"));
+                hour.IsEnabled = isEnabled;
+                hoursRepository.SaveOrUpdate(hour);
             }
             catch
             {

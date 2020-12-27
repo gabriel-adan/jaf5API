@@ -7,6 +7,7 @@ using Authentication.Token.Provider;
 using WebApi.Models;
 using Domain;
 using Domain.RepositoryInterfaces;
+using Logic;
 
 namespace WebApi.Controllers
 {
@@ -98,18 +99,12 @@ namespace WebApi.Controllers
         {
             try
             {
-                if (string.IsNullOrEmpty(userForm.UserName))
-                    throw new ArgumentException("Usuario inválido");
-                if (string.IsNullOrEmpty(userForm.VerifyCode))
-                    throw new ArgumentException("Código de verificación inválido");
+                Helper.ThrowIfIsNullOrEmpty(userForm.UserName, "Usuario inválido");
+                Helper.ThrowIfIsNullOrEmpty(userForm.VerifyCode, "Código de verificación inválido");
                 if (authenticationTokenProvider.ConfirmAccount(userForm.UserName, userForm.VerifyCode, EAuthenticationField.EMAIL))
-                {
                     return Ok(new { ResultMessage = "Tu cuenta fue validada exitosamente" });
-                }
                 else
-                {
                     return NotFound(new { ErrorMessage = "No se pudo validar la cuenta" });
-                }
             }
             catch (ArgumentException ex)
             {
@@ -127,9 +122,7 @@ namespace WebApi.Controllers
         {
             try
             {
-                if (string.IsNullOrEmpty(customerSigInForm.Email))
-                    throw new ArgumentException("Debe ingresar un correo electrónico");
-
+                Helper.ThrowIfIsNullOrEmpty(customerSigInForm.Email, "Debe ingresar un correo electrónico");
                 Customer customer = customersRepository.Exists(customerSigInForm.Email);
                 if (customer != null)
                     if (authenticationTokenProvider.IsEnabledAccount(customerSigInForm.Email, EAuthenticationField.EMAIL))
@@ -170,18 +163,12 @@ namespace WebApi.Controllers
         {
             try
             {
-                if (string.IsNullOrEmpty(userForm.UserName))
-                    throw new ArgumentException("Usuario inválido");
-                if (string.IsNullOrEmpty(userForm.VerifyCode))
-                    throw new ArgumentException("Código de verificación inválido");
+                Helper.ThrowIfIsNullOrEmpty(userForm.UserName, "Usuario inválido");
+                Helper.ThrowIfIsNullOrEmpty(userForm.VerifyCode, "Código de verificación inválido");
                 if (authenticationTokenProvider.ConfirmAccount(userForm.UserName, userForm.VerifyCode, EAuthenticationField.EMAIL))
-                {
                     return Ok(new { ResultMessage = "La cuenta fue validada exitosamente" });
-                }
                 else
-                {
                     return NotFound(new { ErrorMessage = "No se pudo validar la cuenta" });
-                }
             }
             catch (ArgumentException ex)
             {

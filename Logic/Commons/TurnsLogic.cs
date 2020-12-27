@@ -33,23 +33,18 @@ namespace Logic.Commons
         {
             try
             {
-                if (date < Helper.GetDateTimeZone())
-                    throw new ArgumentException("No se puede solicitar un turno para una fecha pasada.");
+                DateTime now = Helper.GetDateTimeZone();
+                Helper.ThrowIf(date < now, "No se puede solicitar un turno para una fecha pasada.");
                 Hour hour = hoursRepository.Get(hourId);
-                if (hour == null)
-                    throw new ArgumentException("Horario inválido.");
+                Helper.ThrowIfNull(hour, "Horario inválido.");
                 Team team = teamsRepository.Get(teamId);
-                if (team == null)
-                    throw new ArgumentException("Grupo no encontrado.");
+                Helper.ThrowIfNull(team, "Grupo no encontrado.");
                 Player requestPlayer = team.Players.Where(p => p.Perfil.Id == perfilId).FirstOrDefault();
-                if (requestPlayer == null)
-                    throw new ArgumentException("No eres miembro de este grupo.");
+                Helper.ThrowIfNull(requestPlayer, "No eres miembro de este grupo.");
                 int amoutPlayers = (int)EPlayersOnTeam.MIN_NUMBER;
-                if (team.Players.Count < amoutPlayers)
-                    throw new ArgumentException(string.Format("El grupo {0} no tiene la cantidad de participantes suficientes para invitar, debe tener al menos {1} participantes.", team.Name, amoutPlayers));
+                Helper.ThrowIf(team.Players.Count < amoutPlayers, string.Format("El grupo {0} no tiene la cantidad de participantes suficientes para invitar, debe tener al menos {1} participantes.", team.Name, amoutPlayers));
                 Field field = fieldsRepository.FindAvailable(date, hour);
-                if (field == null)
-                    throw new ArgumentException("No hay canchas disponibles.");
+                Helper.ThrowIfNull(field, "No hay canchas disponibles.");
 
                 turnsRepository.TransactionManager.BeginTransaction();
 
@@ -63,7 +58,7 @@ namespace Logic.Commons
                 turnsRepository.Save(turn);
                 turnsRepository.SaveOrUpdate(turn);
                 Camp camp = hour.Camp;
-                requestPlayer.ConfirmDate = Helper.GetDateTimeZone();
+                requestPlayer.ConfirmDate = now;
                 playersRepository.SaveOrUpdate(requestPlayer);
 
                 IList<Player> players = team.Players.Where(p => p.Perfil.Id != perfilId).ToList();
@@ -90,11 +85,6 @@ namespace Logic.Commons
                 turnResult.Name = turn.FullName;
                 return turnResult;
             }
-            catch (ArgumentException ae)
-            {
-                turnsRepository.TransactionManager.RollbackTransaction();
-                throw ae;
-            }
             catch
             {
                 turnsRepository.TransactionManager.RollbackTransaction();
@@ -106,16 +96,12 @@ namespace Logic.Commons
         {
             try
             {
-                if (string.IsNullOrEmpty(name))
-                    throw new ArgumentException("Debe ingresar el nombre de quien reserva.");
-                if (date < Helper.GetDateTimeZone())
-                    throw new ArgumentException("No se puede solicitar un turno para una fecha pasada.");
+                Helper.ThrowIfIsNullOrEmpty(name, "Debe ingresar el nombre de quien reserva.");
+                Helper.ThrowIf(date < Helper.GetDateTimeZone(), "No se puede solicitar un turno para una fecha pasada.");
                 Hour hour = hoursRepository.Get(hourId);
-                if (hour == null)
-                    throw new ArgumentException("Horario inválido.");
+                Helper.ThrowIfNull(hour, "Horario inválido.");
                 Field field = fieldsRepository.FindAvailable(date, hour);
-                if (field == null)
-                    throw new ArgumentException("No hay canchas disponibles.");
+                Helper.ThrowIfNull(field, "No hay canchas disponibles.");
 
                 turnsRepository.TransactionManager.BeginTransaction();
 
@@ -149,11 +135,6 @@ namespace Logic.Commons
                 turnResult.Name = turn.FullName;
                 return turnResult;
             }
-            catch (ArgumentException ae)
-            {
-                turnsRepository.TransactionManager.RollbackTransaction();
-                throw ae;
-            }
             catch
             {
                 turnsRepository.TransactionManager.RollbackTransaction();
@@ -165,17 +146,13 @@ namespace Logic.Commons
         {
             try
             {
-                if (string.IsNullOrEmpty(name))
-                    throw new ArgumentException("Debe ingresar un nombre para el grupo.");
+                Helper.ThrowIfIsNullOrEmpty(name, "Debe ingresar un nombre para el grupo.");
                 Perfil perfil = perfilsRepository.Get(perfilId);
-                if (perfil == null)
-                    throw new ArgumentException("Perfil inválido.");
+                Helper.ThrowIfNull(perfil, "Perfil inválido.");
                 Hour hour = hoursRepository.Get(hourId);
-                if (hour == null)
-                    throw new ArgumentException("Horario inválido.");
+                Helper.ThrowIfNull(hour, "Horario inválido.");
                 Field field = fieldsRepository.FindAvailable(date, hour);
-                if (field == null)
-                    throw new ArgumentException("No hay canchas disponibles.");
+                Helper.ThrowIfNull(field, "No hay canchas disponibles.");
 
                 teamsRepository.TransactionManager.BeginTransaction();
 
@@ -215,11 +192,6 @@ namespace Logic.Commons
                 turnResult.Field = turn.Field.Name;
                 turnResult.Name = turn.FullName;
                 return turnResult;
-            }
-            catch (ArgumentException ae)
-            {
-                teamsRepository.TransactionManager.RollbackTransaction();
-                throw ae;
             }
             catch
             {
