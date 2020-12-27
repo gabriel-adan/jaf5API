@@ -51,7 +51,7 @@ namespace Infraestructure.Repositories
             }
         }
 
-        public T Get(int id)
+        public virtual T Get(int id)
         {
             try
             {
@@ -75,7 +75,7 @@ namespace Infraestructure.Repositories
             }
         }
 
-        public T Save(T entity)
+        public virtual T Save(T entity)
         {
             try
             {
@@ -88,7 +88,7 @@ namespace Infraestructure.Repositories
             }
         }
 
-        public T SaveOrUpdate(T entity)
+        public virtual T SaveOrUpdate(T entity)
         {
             try
             {

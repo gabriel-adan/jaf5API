@@ -26,7 +26,7 @@ namespace WebApi.Extentions
                         m.AutoMappings.Add(autoPersistenceModel);
                     })
                     .BuildSessionFactory();
-
+                
                 services.AddSingleton(sessionFactory);
                 services.AddScoped(factory => sessionFactory.OpenSession());
                 services.AddScoped(typeof(IRepository<>), typeof(Repository<>));

@@ -1,12 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using Authentication.Token.Provider;
 using WebApi.Models;
 using Domain;
 using Domain.RepositoryInterfaces;
-using System.Collections.Generic;
-using Microsoft.Extensions.Configuration;
 
 namespace WebApi.Controllers
 {
@@ -14,14 +14,16 @@ namespace WebApi.Controllers
     {
         private readonly IAuthenticationTokenProvider authenticationTokenProvider;
         private readonly IPerfilsRepository perfilsRepository;
+        private readonly ICustomersRepository customersRepository;
         private readonly Random RandomCodeGenerator;
         private readonly int MinValueVerifyCode;
         private readonly int MaxValueVerifyCode;
 
-        public AccountManagerController(ILogger<ApiBaseController> logger, IAuthenticationTokenProvider authenticationTokenProvider, IPerfilsRepository perfilsRepository, IConfiguration configuration) : base(logger)
+        public AccountManagerController(ILogger<ApiBaseController> logger, IAuthenticationTokenProvider authenticationTokenProvider, IPerfilsRepository perfilsRepository, ICustomersRepository customersRepository, IConfiguration configuration) : base(logger)
         {
             this.authenticationTokenProvider = authenticationTokenProvider;
             this.perfilsRepository = perfilsRepository;
+            this.customersRepository = customersRepository;
             RandomCodeGenerator = new Random();
             MinValueVerifyCode = configuration.GetValue<int>("MinValueVerifyCode");
             MaxValueVerifyCode = configuration.GetValue<int>("MaxValueVerifyCode");
@@ -49,8 +51,8 @@ namespace WebApi.Controllers
             }
         }
 
-        [HttpPost("SigIn")]
-        public IActionResult SigIn([FromForm] PlayerSigInForm playerSigInForm)
+        [HttpPost("PlayerSigIn")]
+        public IActionResult PlayerSigIn([FromForm] PlayerSigInForm playerSigInForm)
         {
             try
             {
@@ -58,8 +60,11 @@ namespace WebApi.Controllers
                     throw new ArgumentException("Debe ingresar un correo electrónico");
                 Perfil perfil = perfilsRepository.Exists(playerSigInForm.Email);
                 if (perfil != null)
-                    throw new ArgumentException("Ya existe una cuenta asociada a éste mail");
-                
+                    if (authenticationTokenProvider.IsEnabledAccount(playerSigInForm.Email, EAuthenticationField.EMAIL))
+                        throw new ArgumentException("Ya existe una cuenta activa para este correo electrónico");
+                    else
+                        throw new ArgumentException("Ya existe una cuenta asociada a este correo electrónico pero aún no está validada, verifique la casilla de correo para seguir los pasos de validación");
+
                 int verifyCode = RandomCodeGenerator.Next(MinValueVerifyCode, MaxValueVerifyCode);
                 if (authenticationTokenProvider.SigIn(playerSigInForm.FirstName, playerSigInForm.LastName, playerSigInForm.Password, null, playerSigInForm.Email, false, EAuthenticationField.EMAIL, new List<string>() { "Player" }, verifyCode.ToString()))
                 {
@@ -83,21 +88,21 @@ namespace WebApi.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "SigIn method");
+                logger.LogError(ex, "PlayerSigIn method");
                 return NotFound(new { ErrorMessage = "Ocurrió un error." });
             }
         }
 
-        [HttpPost("ConfirmAccount")]
-        public IActionResult ConfirmAccount([FromForm] PlayerConfirmAccountForm playerConfirmAccountForm)
+        [HttpPost("PlayerAccountConfirm")]
+        public IActionResult PlayerAccountConfirm([FromForm] UserForm userForm)
         {
             try
             {
-                if (string.IsNullOrEmpty(playerConfirmAccountForm.UserName))
+                if (string.IsNullOrEmpty(userForm.UserName))
                     throw new ArgumentException("Usuario inválido");
-                if (string.IsNullOrEmpty(playerConfirmAccountForm.VerifyCode))
+                if (string.IsNullOrEmpty(userForm.VerifyCode))
                     throw new ArgumentException("Código de verificación inválido");
-                if (authenticationTokenProvider.ConfirmAccount(playerConfirmAccountForm.UserName, playerConfirmAccountForm.VerifyCode, EAuthenticationField.EMAIL))
+                if (authenticationTokenProvider.ConfirmAccount(userForm.UserName, userForm.VerifyCode, EAuthenticationField.EMAIL))
                 {
                     return Ok(new { ResultMessage = "Tu cuenta fue validada exitosamente" });
                 }
@@ -112,7 +117,79 @@ namespace WebApi.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "ConfirmAccount method");
+                logger.LogError(ex, "PlayerAccountConfirm method");
+                return NotFound(new { ErrorMessage = "Ocurrió un error." });
+            }
+        }
+
+        [HttpPost("CustomerSigIn")]
+        public IActionResult CustomerSigIn([FromForm] CustomerSigInForm customerSigInForm)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(customerSigInForm.Email))
+                    throw new ArgumentException("Debe ingresar un correo electrónico");
+
+                Customer customer = customersRepository.Exists(customerSigInForm.Email);
+                if (customer != null)
+                    if (authenticationTokenProvider.IsEnabledAccount(customerSigInForm.Email, EAuthenticationField.EMAIL))
+                        throw new ArgumentException("Ya existe una cuenta activa para este correo electrónico");
+                    else
+                        throw new ArgumentException("Ya existe una cuenta asociada a este correo electrónico pero aún no está validada, verifique la casilla de correo para seguir los pasos de validación");
+
+                if (authenticationTokenProvider.SigIn(customerSigInForm.FirstName, customerSigInForm.LastName, customerSigInForm.Password, null, customerSigInForm.Email, false, EAuthenticationField.EMAIL, new List<string>() { "Owner" }))
+                {
+                    customer = new Customer();
+                    customer.FirstName = customerSigInForm.FirstName;
+                    customer.LastName = customerSigInForm.LastName;
+                    customer.Email = customerSigInForm.Email;
+                    customersRepository.Save(customer);
+
+                    //NOTIFICAR POR MAIL PARA LA CONFIRMACIÓN DE CUENTA.
+
+                    return Ok(new { ResultMessage = string.Format("Cuenta creada exitosamente. Por favor verifique su casilla de correo {0} para validar su cuenta.", customerSigInForm.Email) });
+                }
+                else
+                {
+                    return NotFound(new { ErrorMessage = "No se pudieron registrar los datos." });
+                }
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(new { ErrorMessage = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "CustomerSigIn method");
+                return NotFound(new { ErrorMessage = "Ocurrió un error." });
+            }
+        }
+
+        [HttpPost("CustomerAccountConfirm")]
+        public IActionResult CustomerAccountConfirm([FromForm] UserForm userForm)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(userForm.UserName))
+                    throw new ArgumentException("Usuario inválido");
+                if (string.IsNullOrEmpty(userForm.VerifyCode))
+                    throw new ArgumentException("Código de verificación inválido");
+                if (authenticationTokenProvider.ConfirmAccount(userForm.UserName, userForm.VerifyCode, EAuthenticationField.EMAIL))
+                {
+                    return Ok(new { ResultMessage = "La cuenta fue validada exitosamente" });
+                }
+                else
+                {
+                    return NotFound(new { ErrorMessage = "No se pudo validar la cuenta" });
+                }
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(new { ErrorMessage = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "CustomerAccountConfirm method");
                 return NotFound(new { ErrorMessage = "Ocurrió un error." });
             }
         }
