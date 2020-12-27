@@ -1,10 +1,14 @@
-﻿using Domain;
-using Domain.Dtos;
+﻿using Domain.Dtos;
+using System.Collections.Generic;
 
 namespace Logic.Contracts
 {
     public interface ICampsLogic
     {
-        CampAccountDto Create(int customerId, string name, string street, string number, double longitude, double latitude);
+        CampDto Create(int customerId, string name, string street, string number, double longitude, double latitude, IList<string> fieldNames, int fieldCount);
+
+        IList<FieldDto> GetFields(int campId);
+
+        void EditFieldState(int fieldId, int campId, bool isEnabled);
     }
 }
