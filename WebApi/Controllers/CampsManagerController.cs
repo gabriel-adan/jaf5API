@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
@@ -8,7 +7,6 @@ using WebApi.Models;
 using Domain.Dtos;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
-using Logic;
 
 namespace WebApi.Controllers
 {

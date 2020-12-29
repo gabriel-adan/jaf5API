@@ -5,6 +5,6 @@ namespace Domain.RepositoryInterfaces
 {
     public interface ICampsRepository : IRepository<Camp>
     {
-        IList<Camp> NearAround(double longitude, double latitude, decimal radius);
+        IList<Camp> ListByBufferZone(double longitude, double latitude, float radius);
     }
 }

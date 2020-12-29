@@ -123,5 +123,31 @@ namespace Logic.Commons
                 throw;
             }
         }
+
+        public IList<CampDto> ListByBufferZone(double longitude, double latitude, float radius)
+        {
+            try
+            {
+                IList<CampDto> campDtos = new List<CampDto>();
+                var camps = campsRepository.ListByBufferZone(longitude, latitude, radius);
+                foreach (Camp camp in camps)
+                {
+                    CampDto campDto = new CampDto();
+                    campDto.Id = camp.Id;
+                    campDto.Name = camp.Name;
+                    campDto.Street = camp.Street;
+                    campDto.Number = camp.Number;
+                    campDto.IsEnabled = camp.IsEnabled;
+                    campDto.Longitude = camp.Longitude;
+                    campDto.Latitude = camp.Latitude;
+                    campDtos.Add(campDto);
+                }
+                return campDtos;
+            }
+            catch
+            {
+                throw;
+            }
+        }
     }
 }

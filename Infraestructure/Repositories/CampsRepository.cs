@@ -63,11 +63,11 @@ namespace Infraestructure.Repositories
             }
         }
 
-        public IList<Camp> NearAround(double longitude, double latitude, decimal radius)
+        public IList<Camp> ListByBufferZone(double longitude, double latitude, float radius)
         {
             try
             {
-                var query = Session.CreateSQLQuery(string.Format("SELECT Id, Name, Street, Number, IsEnabled, ST_X(Location) AS Longitude, ST_Y(Location) AS Latitude FROM camp WHERE ST_Intersects(ST_Buffer(ST_GeomFromText('POINT({0} {1})', 4326), {2}), Location) = 1;", longitude, latitude, radius));
+                var query = Session.CreateSQLQuery(string.Format("CALL SP_CAMPS_IN_BUFFER_ZONE({0}, {1}, {2});", longitude, latitude, radius));
                 query.AddEntity(typeof(Camp));
                 return query.List<Camp>();
             }

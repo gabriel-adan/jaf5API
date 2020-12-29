@@ -76,13 +76,13 @@ namespace WebApi.Controllers
             }
         }
 
-        [HttpGet("FindInBufferZone")]
+        [HttpPost("FindInBufferZone")]
         [Authorize(Roles = "Player")]
-        public IActionResult FindInBufferZone([FromForm] BufferTurnForm bufferTurnForm)
+        public IActionResult FindInBufferZone([FromForm] BufferForm bufferForm)
         {
             try
             {
-                var turns = turnsLogic.ListByBufferZone(bufferTurnForm.Longitude, bufferTurnForm.Latitude, bufferTurnForm.Radius);
+                var turns = turnsLogic.ListByBufferZone(bufferForm.Longitude, bufferForm.Latitude, bufferForm.Radius);
                 return Ok(turns);
             }
             catch (ArgumentException ex)

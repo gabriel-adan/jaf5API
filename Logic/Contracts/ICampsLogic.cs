@@ -10,5 +10,7 @@ namespace Logic.Contracts
         IList<FieldDto> GetFields(int campId);
 
         void EditFieldState(int fieldId, int campId, bool isEnabled);
+
+        IList<CampDto> ListByBufferZone(double longitude, double latitude, float radius);
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace WebApi.Models
 {
-    public class BufferTurnForm
+    public class BufferForm
     {
         public double Longitude { get; set; }
         public double Latitude { get; set; }
