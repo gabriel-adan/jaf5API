@@ -28,5 +28,19 @@ namespace Infraestructure.Repositories
                 throw;
             }
         }
+
+        public IList<Turn> ListByBufferZone(double longitude, double latitude, float radius, DateTime dateTime)
+        {
+            try
+            {
+                var query = Session.CreateSQLQuery(string.Format("CALL SP_TURNS_IN_BUFFER_ZONE({0}, {1}, {2}, '{3}');", longitude, latitude, radius, dateTime.ToString("yyyy-MM-dd HH:mm:ss")));
+                query.AddEntity(typeof(Turn));
+                return query.List<Turn>();
+            }
+            catch
+            {
+                throw;
+            }
+        }
     }
 }

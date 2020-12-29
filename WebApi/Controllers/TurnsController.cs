@@ -75,5 +75,25 @@ namespace WebApi.Controllers
                 return NotFound(new { ErrorMessage = "Ocurrió un error al crear el equipo" });
             }
         }
+
+        [HttpGet("FindInBufferZone")]
+        [Authorize(Roles = "Player")]
+        public IActionResult FindInBufferZone([FromForm] BufferTurnForm bufferTurnForm)
+        {
+            try
+            {
+                var turns = turnsLogic.ListByBufferZone(bufferTurnForm.Longitude, bufferTurnForm.Latitude, bufferTurnForm.Radius);
+                return Ok(turns);
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(new { ErrorMessage = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "FindInBufferZone method");
+                return NotFound(new { ErrorMessage = "Ocurrió un error." });
+            }
+        }
     }
 }

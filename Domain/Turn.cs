@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using SharpArch.Domain.DomainModel;
 
 namespace Domain

@@ -199,5 +199,35 @@ namespace Logic.Commons
                 throw;
             }
         }
+
+        public IList<TurnTeamDto> ListByBufferZone(double longitude, double latitude, float radius)
+        {
+            try
+            {
+                IList<TurnTeamDto> turnTeams = new List<TurnTeamDto>();
+                DateTime dateTime = Helper.GetDateTimeZone();
+                dateTime = dateTime.AddHours((int)ETurnsExpiration.HOURS);
+                var turns = turnsRepository.ListByBufferZone(longitude, latitude, radius, dateTime);
+                foreach (Turn turn in turns)
+                {
+                    Hour hour = turn.Hour;
+                    Camp camp = hour.Camp;
+                    Team team = turn.Team;
+                    TurnTeamDto turnTeamDto = new TurnTeamDto();
+                    turnTeamDto.Id = turn.Id;
+                    turnTeamDto.TeamName = team.Name;
+                    turnTeamDto.CampName = camp.Name;
+                    turnTeamDto.Address = camp.Street + " " + camp.Number;
+                    turnTeamDto.Timestamp = new DateTime(turn.Date.Year, turn.Date.Month, turn.Date.Day, hour.Time.Hours, hour.Time.Minutes, hour.Time.Seconds);
+                    turnTeamDto.PlayersAmount = team.Players.Where(p => p.ConfirmDate.HasValue).Count();
+                    turnTeams.Add(turnTeamDto);
+                }
+                return turnTeams;
+            }
+            catch
+            {
+                throw;
+            }
+        }
     }
 }

@@ -26,25 +26,24 @@ namespace Logic.Commons
                 Camp camp = campRepository.Get(campId);
                 Helper.ThrowIfNull(camp, "Datos de cancha inválida.");
                 Helper.ThrowIf(!camp.IsEnabled, "Cancha no disponible por el momento.");
-                if (!hoursRepository.Exists(time, dayOfWeek, campId))
+                Helper.ThrowIf(hoursRepository.Exists(time, dayOfWeek, campId), "Ya existe el horario para el día de la semana indicado.");
+
+                Hour hour = new Hour();
+                hour.Time = time;
+                hour.DayOfWeek = dayOfWeek;
+                hour.IsEnabled = isEnabled;
+                hour.Camp = camp;
+
+                hoursRepository.Save(hour);
+
+                return new HourDto()
                 {
-                    Hour hour = new Hour();
-                    hour.Time = time;
-                    hour.DayOfWeek = dayOfWeek;
-                    hour.IsEnabled = isEnabled;
-                    hour.Camp = camp;
-                    hoursRepository.Save(hour);
-                    return new HourDto()
-                    {
-                        Id = hour.Id,
-                        Time = hour.Time,
-                        DayOfWeek = hour.DayOfWeek,
-                        IsEnabled = hour.IsEnabled,
-                        CampId = campId
-                    };
-                }
-                else
-                    throw new ArgumentException("Ya existe el horario para el día de la semana indicado.");
+                    Id = hour.Id,
+                    Time = hour.Time,
+                    DayOfWeek = hour.DayOfWeek,
+                    IsEnabled = hour.IsEnabled,
+                    CampId = campId
+                };
             }
             catch
             {

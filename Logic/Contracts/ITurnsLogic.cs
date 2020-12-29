@@ -1,5 +1,6 @@
 ﻿using Domain.Dtos;
 using System;
+using System.Collections.Generic;
 
 namespace Logic.Contracts
 {
@@ -10,5 +11,7 @@ namespace Logic.Contracts
         TurnResultDto Reserve(DateTime date, int hourId, string name);
 
         TurnResultDto CreateTeamTurn(DateTime date, int hourId, string name, bool isPrivate, int perfilId);
+
+        IList<TurnTeamDto> ListByBufferZone(double longitude, double latitude, float radius);
     }
 }
